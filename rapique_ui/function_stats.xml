@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VideoFunctionStats>
+  <Video name="">
+   <Function name="RAPIQUE_spatial_features">
+    <ExecutionCount>48</ExecutionCount>
+    <AverageExecTime>1.080837</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features">
+    <ExecutionCount>3</ExecutionCount>
+    <AverageExecTime>10.948664</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features/deep_learning">
+    <ExecutionCount>24</ExecutionCount>
+    <AverageExecTime>0.452671</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features/temporal NSS">
+    <ExecutionCount>3</ExecutionCount>
+    <AverageExecTime>0.402361</AverageExecTime>
+   </Function>
+   <Function name="est_GGD_param">
+    <ExecutionCount>10364</ExecutionCount>
+    <AverageExecTime>0.001010</AverageExecTime>
+   </Function>
+   <Function name="gen_DoG">
+    <ExecutionCount>48</ExecutionCount>
+    <AverageExecTime>0.024571</AverageExecTime>
+   </Function>
+   <Function name="nakafit">
+    <ExecutionCount>1296</ExecutionCount>
+    <AverageExecTime>0.001226</AverageExecTime>
+   </Function>
+  </Video>
+  <Video name="RAPIQUE-Main">
+   <Function name="demo_compute_RAPIQUE_feats">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>33.336960</AverageExecTime>
+   </Function>
+  </Video>
+</VideoFunctionStats>
