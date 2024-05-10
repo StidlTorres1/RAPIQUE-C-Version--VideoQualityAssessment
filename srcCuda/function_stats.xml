@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VideoFunctionStats>
+  <Video name="RAPIQUE-Main">
+   <Function name="demo_compute_RAPIQUE_feats">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>0.044684</AverageExecTime>
+   </Function>
+  </Video>
+</VideoFunctionStats>
