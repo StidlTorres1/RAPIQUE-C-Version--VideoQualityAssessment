@@ -124,9 +124,9 @@ def threaded_execute_program():
     thread.start()
 
 def execute_program():
-    global last_processing_time, video_count, video_files, process
+    global last_processing_time, video_count, video_files, process, terminate
     start_monitoring()
-    while video_files:
+    while video_files and not terminate:
         video_path = video_files.pop(0)  # Process the first video in the list
         process = subprocess.Popen(["srcCuda.exe", video_path], stdout=subprocess.PIPE, text=True)
         for line in process.stdout:
@@ -140,7 +140,40 @@ def execute_program():
                 app.after(0, lambda text=display_text: processed_list.insert(tk.END, text))  # Bind the display text
                 app.after(0, lambda: unprocessed_list.delete(0))
                 app.after(0, update_countdown)
+    terminate = False
     stop_monitoring()
+
+
+def kill_all_exec_instances(exec_name):
+    for proc in psutil.process_iter(['pid', 'name']):
+        # Check if process name matches the executable you want to kill
+        if proc.info['name'] == exec_name:
+            try:
+                print(f"Attempting to kill {exec_name} with PID {proc.pid}")
+                proc.kill()
+                proc.wait()
+                print(f"Successfully killed {exec_name} with PID {proc.pid}")
+            except psutil.NoSuchProcess:
+                print(f"No such process: {exec_name} with PID {proc.pid}")
+            except Exception as e:
+                print(f"Error killing {exec_name} with PID {proc.pid}: {e}")
+
+
+def ensure_process_killed(exec_name):
+    while any(proc.info['name'] == exec_name for proc in psutil.process_iter(['name'])):
+        kill_all_exec_instances(exec_name)
+        time.sleep(1)  # Pause to avoid too aggressive CPU usage
+        print(f"Re-checking for {exec_name} processes and attempting kill again if found.")
+
+
+def reset_ui_and_state():
+    global video_count, video_files, last_processing_time
+    last_processing_time = float('inf')
+    progress_var.set(0)  # Reset progress bar
+    countdown_label.config(text="Execution cancelled.")
+    cpu_label.config(text="CPU Usage: 0%")
+    gpu_label.config(text="GPU Usage: 0%")
+    ram_label.config(text="RAM Usage: 0%")
 
 
 def stop_program():
@@ -148,13 +181,19 @@ def stop_program():
     if process:
         try:
             terminate = True
-            process.terminate()
-            process.wait()  # Ensure the process has terminated
-            process = None
+            process.terminate()  # Try polite termination first
+            process.wait(timeout=5)  # Wait for the process to terminate
+        except (psutil.NoSuchProcess, psutil.TimeoutExpired):
+            pass  # If the process does not exist or does not terminate, ignore it
         except Exception as e:
             messagebox.showerror("Error", f"Failed to terminate the process: {e}")
+        finally:
+            kill_all_exec_instances("srcCuda.exe")  # Kill all instances regardless
+            process = None
     stop_monitoring()  # Make sure to stop monitoring resources
+    reset_ui_and_state()  # Reset UI and state
     countdown_label.config(text="Program stopped.")  # Update UI
+
 
 app = tk.Tk()
 app.title("Performance Monitor and Program Executor")

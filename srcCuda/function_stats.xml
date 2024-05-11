@@ -1,9 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <VideoFunctionStats>
+  <Video name="3339962845.mp4">
+   <Function name="RAPIQUE_spatial_features">
+    <ExecutionCount>16</ExecutionCount>
+    <AverageExecTime>11.883406</AverageExecTime>
+   </Function>
+   <Function name="RAPIQUE_video">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>114.249527</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>113.810921</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features/deep_learning">
+    <ExecutionCount>8</ExecutionCount>
+    <AverageExecTime>4.706390</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features/temporal NSS">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>1.465746</AverageExecTime>
+   </Function>
+   <Function name="est_AGGD_param">
+    <ExecutionCount>1723</ExecutionCount>
+    <AverageExecTime>0.036170</AverageExecTime>
+   </Function>
+   <Function name="est_GGD_param">
+    <ExecutionCount>3439</ExecutionCount>
+    <AverageExecTime>0.015451</AverageExecTime>
+   </Function>
+   <Function name="gen_DoG">
+    <ExecutionCount>16</ExecutionCount>
+    <AverageExecTime>0.137343</AverageExecTime>
+   </Function>
+   <Function name="nakafit">
+    <ExecutionCount>432</ExecutionCount>
+    <AverageExecTime>0.016239</AverageExecTime>
+   </Function>
+  </Video>
+  <Video name="6076608135.mp4">
+   <Function name="RAPIQUE_spatial_features">
+    <ExecutionCount>16</ExecutionCount>
+    <AverageExecTime>10.068701</AverageExecTime>
+   </Function>
+   <Function name="RAPIQUE_video">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>94.067940</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>92.529480</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features/deep_learning">
+    <ExecutionCount>8</ExecutionCount>
+    <AverageExecTime>4.225714</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features/temporal NSS">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>1.549912</AverageExecTime>
+   </Function>
+   <Function name="est_AGGD_param">
+    <ExecutionCount>1720</ExecutionCount>
+    <AverageExecTime>0.029673</AverageExecTime>
+   </Function>
+   <Function name="est_GGD_param">
+    <ExecutionCount>3448</ExecutionCount>
+    <AverageExecTime>0.010864</AverageExecTime>
+   </Function>
+   <Function name="gen_DoG">
+    <ExecutionCount>16</ExecutionCount>
+    <AverageExecTime>0.189954</AverageExecTime>
+   </Function>
+   <Function name="nakafit">
+    <ExecutionCount>432</ExecutionCount>
+    <AverageExecTime>0.011333</AverageExecTime>
+   </Function>
+  </Video>
+  <Video name="7518773518.mp4">
+   <Function name="RAPIQUE_spatial_features">
+    <ExecutionCount>16</ExecutionCount>
+    <AverageExecTime>12.583279</AverageExecTime>
+   </Function>
+   <Function name="RAPIQUE_video">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>92.540840</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>91.833939</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features/deep_learning">
+    <ExecutionCount>8</ExecutionCount>
+    <AverageExecTime>5.055186</AverageExecTime>
+   </Function>
+   <Function name="calc_RAPIQUE_features/temporal NSS">
+    <ExecutionCount>1</ExecutionCount>
+    <AverageExecTime>1.809601</AverageExecTime>
+   </Function>
+   <Function name="est_AGGD_param">
+    <ExecutionCount>1720</ExecutionCount>
+    <AverageExecTime>0.023599</AverageExecTime>
+   </Function>
+   <Function name="est_GGD_param">
+    <ExecutionCount>3447</ExecutionCount>
+    <AverageExecTime>0.009042</AverageExecTime>
+   </Function>
+   <Function name="gen_DoG">
+    <ExecutionCount>16</ExecutionCount>
+    <AverageExecTime>0.093973</AverageExecTime>
+   </Function>
+   <Function name="nakafit">
+    <ExecutionCount>432</ExecutionCount>
+    <AverageExecTime>0.009279</AverageExecTime>
+   </Function>
+  </Video>
   <Video name="RAPIQUE-Main">
    <Function name="demo_compute_RAPIQUE_feats">
     <ExecutionCount>1</ExecutionCount>
-    <AverageExecTime>0.044684</AverageExecTime>
+    <AverageExecTime>301.022949</AverageExecTime>
    </Function>
   </Video>
 </VideoFunctionStats>

@@ -237,6 +237,9 @@ If you prefer to run without debugging, use Ctrl+F5 instead.
 - conda activate video_processing
 - pip install psutil
 - python ui.py
+- Move the .dll libtorch(pytorch) files into the root directory (rapique_ui)
+- Replace the mainRAPIQUEE.cu in srcCuda project by mainRAPIQUEE_.cu located in the rapique_ui and re compile it.
+- Copy the .exec file generated in srcCuda/x64/Debug/srcCuda.exec  and paste it into the rapique_ui folder.
 
 ## Usage
 - Load .mp4 videos with the Load Videos button
@@ -244,7 +247,8 @@ If you prefer to run without debugging, use Ctrl+F5 instead.
 - Select the output folder
 - Press the Start Program button and wait for processing
 - After finished, check your output folder
-
+## Usage
+- The results of this project can be found in the folder or path 'RAPIQUE-main (Matlab) and All Results', the extracted features can be found in 'RAPIQUE-main (Matlab) and All Results\feat_files' and the other video quality assessment metrics in 'Others Metrics VQA'.
 ## Additional Notes
 - Regularly updating Visual Studio and your project's dependencies can help prevent compatibility issues and ensure access to the latest features and security improvements.
 - Utilize Visual Studio's extensive documentation and community forums for additional support and guidance on using advanced features or troubleshooting more complex issues.
