@@ -14,6 +14,8 @@ initial_video_count = 0
 video_files = []  # To store paths of loaded videos
 process = None
 terminate = False
+cont = 1
+running = threading.Event()  # Control event for countdown thread
 
 def get_nvidia_gpu_usage():
     try:
@@ -49,26 +51,19 @@ def stop_monitoring():
 def start_countdown(time_left):
     def run_countdown():
         nonlocal time_left
-        while time_left > 0:
+        while time_left > 0 and running.is_set():
             time.sleep(1)
             time_left -= 1
             app.after(0, lambda: countdown_label.config(text=f"Estimated time remaining: {time_left:.2f} seconds"))
-        if time_left <= 0:
+        if time_left <= 0 or not running.is_set():
             app.after(0, lambda: countdown_label.config(text="Processing complete!"))
 
+    running.set()  # Ensure the running event is set when starting the countdown
     countdown_thread = threading.Thread(target=run_countdown)
     countdown_thread.daemon = True
     countdown_thread.start()
 
-def update_countdown():
-    global last_processing_time, video_count, initial_video_count
-    if video_count > 0:
-        remaining_time = last_processing_time * video_count
-        progress_var.set(100 * (1 - video_count / initial_video_count))
-        start_countdown(remaining_time)  # Start or reset the countdown
-    else:
-        countdown_label.config(text="Processing complete!")
-        progress_var.set(100)
+
 
 def load_database_videos():
     global video_count, initial_video_count, video_files
@@ -123,9 +118,21 @@ def threaded_execute_program():
     thread.daemon=True
     thread.start()
 
+def update_countdown():
+    global last_processing_time, video_count, initial_video_count, cont
+    if video_count > 0:
+        remaining_time = last_processing_time * video_count * cont
+        progress_var.set(100 * (1 - video_count / initial_video_count))
+        start_countdown(remaining_time)  # Start or reset the countdown
+    else:
+        app.after(0, lambda: countdown_label.config(text="Program stopped."))
+        progress_var.set(100)
+
 def execute_program():
     global last_processing_time, video_count, video_files, process, terminate
     start_monitoring()
+    if not video_files:
+        app.after(0, lambda: countdown_label.config(text="Program stopped."))
     while video_files and not terminate:
         video_path = video_files.pop(0)  # Process the first video in the list
         process = subprocess.Popen(["srcCuda.exe", video_path], stdout=subprocess.PIPE, text=True)
@@ -137,11 +144,13 @@ def execute_program():
                 last_processing_time = execution_time
                 video_count -= 1
                 display_text = f"{os.path.basename(video_path)} - {execution_time} seconds"
-                app.after(0, lambda text=display_text: processed_list.insert(tk.END, text))  # Bind the display text
+                app.after(0, lambda text=display_text: processed_list.insert(tk.END, text))
                 app.after(0, lambda: unprocessed_list.delete(0))
                 app.after(0, update_countdown)
     terminate = False
     stop_monitoring()
+    if video_count <= 0:
+        app.after(0, lambda: countdown_label.config(text="Program stopped."))
 
 
 def kill_all_exec_instances(exec_name):
@@ -167,17 +176,18 @@ def ensure_process_killed(exec_name):
 
 
 def reset_ui_and_state():
-    global video_count, video_files, last_processing_time
+    global last_processing_time
     last_processing_time = float('inf')
     progress_var.set(0)  # Reset progress bar
-    countdown_label.config(text="Execution cancelled.")
+    countdown_label.config(text="Execution cancelled.")  # Reset countdown label explicitly
     cpu_label.config(text="CPU Usage: 0%")
     gpu_label.config(text="GPU Usage: 0%")
     ram_label.config(text="RAM Usage: 0%")
 
 
+
 def stop_program():
-    global process, terminate
+    global process, terminate, video_count, running
     if process:
         try:
             terminate = True
@@ -190,9 +200,14 @@ def stop_program():
         finally:
             kill_all_exec_instances("srcCuda.exe")  # Kill all instances regardless
             process = None
+
+    running.clear()  # Stop the countdown
+    video_count = 0
+    update_countdown()
     stop_monitoring()  # Make sure to stop monitoring resources
     reset_ui_and_state()  # Reset UI and state
-    countdown_label.config(text="Program stopped.")  # Update UI
+    countdown_label.config(text="Program stopped.")  # Update UI explicitly
+
 
 
 app = tk.Tk()
