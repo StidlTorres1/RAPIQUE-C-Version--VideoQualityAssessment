@@ -314,34 +314,3 @@ vector<vector<float>> calc_RAPIQUE_features(const std::string& yuv_name, int wid
         throw;  // Rethrow the exception if you need to propagate it
     }
 }
-//Documentation
-// Extracting and processing features from YUV video frames for video quality assessment. It uses OpenCV for image processing, along with other standard libraries for file and stream operations. Line by line:
-// 1-8. Include statements:
-// •	These lines include necessary headers for vector operations, string manipulation, mathematical functions, file streaming, OpenCV functionalities, OpenCL interface for GPU optimizations, C standard I/O, algorithm functions, execution policies for parallel algorithms, and mutex for thread safety.
-// 9-11. Function declarations:
-// •	Declares three functions YUVread, RAPIQUE_spatial_features, and calc_RAPIQUE_features that are defined elsewhere or later in the code.
-// 12-76. Function calc_RAPIQUE_features:
-// •	This function calculates RAPIQUE (Rapid and Accurate Image Quality Evaluator) features from a given YUV file.
-// 13-17. File handling and initial checks:
-// •	Opens a YUV file and checks if it's open. If not, it outputs an error message and returns an empty feature vector.
-// 18-22. Frame number calculation:
-// •	Calculates the number of frames in the YUV file based on its size and the dimensions of each frame.
-// 23-27. Frame rate processing:
-// •	Computes half_framerate and third_framerate for later use in determining which frames to process.
-// 28-37. Frame triplet preparation:
-// •	Reserves space for frame triplets and populates them by reading specific frames from the YUV file. It uses the YUVread function and adjusts frame indices based on the frame rate.
-// 38.	Mutex declaration:
-// •	Declares a mutex for thread safety during parallel processing.
-// 39-75. Parallel processing of frames:
-// •	Processes the frame triplets in parallel using for_each with execution::par policy.
-// •	Converts YUV frames to RGB.
-// •	Resizes the frames if necessary based on the minimum side length (minside) and aspect ratio.
-// •	Extracts spatial features from previous and next frames using RAPIQUE_spatial_features.
-// •	Calculates the mean and difference of features between the previous and next frames.
-// •	Uses a mutex to safely add these features to the overall feature vector feats_frames.
-// 77-83. XML file output:
-// •	Writes the features to an XML file named "feat_frames.xml".
-// •	Outputs a success message upon saving the file.
-// 84.	Return statement:
-// •	Returns the calculated features.
-// This function is a comprehensive implementation for feature extraction from video frames, tailored for video quality assessment. It leverages parallel processing to efficiently handle multiple frames and computes spatial features for pairs of frames, which are likely used to assess temporal changes and overall video quality. The use of mutexes ensures thread safety during parallel execution. The features are then saved in an XML format for further use or analysis.

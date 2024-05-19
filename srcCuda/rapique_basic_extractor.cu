@@ -12,15 +12,12 @@
 #include "FilterFactory.h"
 #include "CUDAFilterFactory.h"
 
-
-
 std::vector<double> nakafit(const std::vector<double>& data);
 std::pair<double, double> est_GGD_param(const std::vector<double>& vec);
 std::tuple<double, double, double> est_AGGD_param(const std::vector<double>& vec);
 
 cv::Mat createManualGaussianKernel() {
-    return (cv::Mat_<float>(7, 7) <<
-        0.0002, 0.0010, 0.0030, 0.0043, 0.0030, 0.0010, 0.0002,
+    return (cv::Mat_<float>(7, 7) << 0.0002, 0.0010, 0.0030, 0.0043, 0.0030, 0.0010, 0.0002,
         0.0010, 0.0062, 0.0187, 0.0270, 0.0187, 0.0062, 0.0010,
         0.0030, 0.0187, 0.0563, 0.0813, 0.0563, 0.0187, 0.0030,
         0.0043, 0.0270, 0.0813, 0.1174, 0.0813, 0.0270, 0.0043,
@@ -55,13 +52,17 @@ cv::cuda::GpuMat applyGaussianFilter(const cv::cuda::GpuMat& src, cv::Ptr<cv::cu
     return dst;
 }
 
-
-//3128
 std::vector<float> rapique_basic_extractor(const cv::Mat& img) {
+    if (img.empty()) {
+        // Handle empty input image
+        std::cerr << "Received empty input image in rapique_basic_extractor." << std::endl;
+        return {};
+    }
+
     CUDAFilterFactory cudaFactory;
 
     std::vector<float> ftrs;
-    ftrs.reserve(18);
+    ftrs.reserve(34); // Update the expected number of features
 
     try {
         const int filtlength = 7;
@@ -103,8 +104,6 @@ std::vector<float> rapique_basic_extractor(const cv::Mat& img) {
         structdis.convertTo(structdis, CV_32F);
         sigma.convertTo(sigma, CV_32F);
 
-        //stream.waitForCompletion();
-
         std::vector<double> vec_struct(structdis.begin<float>(), structdis.end<float>());
         auto [gamparam, sigparam] = est_GGD_param(vec_struct);
         ftrs.push_back(gamparam);
@@ -127,7 +126,7 @@ std::vector<float> rapique_basic_extractor(const cv::Mat& img) {
         for (const auto& pair : pairs) {
             futures.push_back(std::async(std::launch::async, [pair]() -> std::tuple<float, float, float, float> {
                 std::vector<double> pairVec(pair.begin<float>(), pair.end<float>());
-                auto [alpha, leftstd, rightstd] = est_AGGD_param(pairVec); // Assuming est_AGGD_param correctly returns a tuple<float, float, float, float>
+                auto [alpha, leftstd, rightstd] = est_AGGD_param(pairVec);
                 float meanparam = (rightstd - leftstd) * (std::tgamma(2.0f / alpha) / std::tgamma(1.0f / alpha)) *
                     (std::sqrt(std::tgamma(1.0f / alpha)) / std::sqrt(std::tgamma(3.0f / alpha)));
                 return std::make_tuple(alpha, meanparam, leftstd, rightstd);
@@ -163,7 +162,6 @@ std::vector<float> rapique_basic_extractor(const cv::Mat& img) {
         ftrs.push_back(gamparam_combined);
         ftrs.push_back(sigparam_combined);
 
-        // Additional matrix operations using custom filters
         static const cv::Mat win_tmp_1 = (cv::Mat_<float>(3, 3) << 0, 1, 0, -1, 0, -1, 0, 1, 0);
         static const cv::Mat win_tmp_2 = (cv::Mat_<float>(3, 3) << 1, 0, -1, 0, 0, 0, -1, 0, 1);
 
@@ -176,13 +174,11 @@ std::vector<float> rapique_basic_extractor(const cv::Mat& img) {
 
         auto [gamparam1, sigparam1] = est_GGD_param(structdis_diff_1_vec);
         auto [gamparam2, sigparam2] = est_GGD_param(structdis_diff_2_vec);
-
         ftrs.push_back(static_cast<float>(gamparam1));
         ftrs.push_back(static_cast<float>(sigparam1));
         ftrs.push_back(static_cast<float>(gamparam2));
         ftrs.push_back(static_cast<float>(sigparam2));
 
-        // Release GPU resources
         img_gpu.release();
         mu_gpu.release();
         sigma_sq_gpu.release();
@@ -195,5 +191,3 @@ std::vector<float> rapique_basic_extractor(const cv::Mat& img) {
 
     return ftrs;
 }
-
-

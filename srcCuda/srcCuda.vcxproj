@@ -92,7 +92,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="calc_RAPIQUE_features.cu" />
-    <CudaCompile Include="convertRGBToLAB.cu" />
     <CudaCompile Include="CUDAFilterFactory.cu" />
     <CudaCompile Include="CUDAImageFilter.cu" />
     <CudaCompile Include="CudaImageProcessor.cu" />
@@ -103,7 +102,6 @@
     <CudaCompile Include="est_AGGD_param.cu" />
     <CudaCompile Include="est_GGD_param.cu" />
     <CudaCompile Include="FunctionLogger.cu" />
-    <CudaCompile Include="gauDerivative.cu" />
     <CudaCompile Include="gen_Dog.cu" />
     <CudaCompile Include="Globals.cu" />
     <CudaCompile Include="ImageReaderFactory.cu" />
@@ -118,12 +116,16 @@
     <CudaCompile Include="YUVReader.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="calc_RAPIQUE_features.h" />
     <ClInclude Include="CUDAFilterFactory.h" />
     <ClInclude Include="CUDAImageFilter.h" />
     <ClInclude Include="CudaImageProcessor.h" />
     <ClInclude Include="CudaOps.h" />
+    <ClInclude Include="est_AGGD_param.cuh" />
+    <ClInclude Include="est_GGD_param.cuh" />
     <ClInclude Include="FilterFactory.h" />
     <ClInclude Include="FunctionLogger.h" />
+    <ClInclude Include="gen_Dog.cuh" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="ICudaOps.h" />
     <ClInclude Include="ImageFilter.h" />
@@ -133,6 +135,9 @@
     <ClInclude Include="IModel.h" />
     <ClInclude Include="IModelFactory.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="nakafit.cuh" />
+    <ClInclude Include="rapique_basic_extractor.cuh" />
+    <ClInclude Include="RAPIQUE_spatial_features.cuh" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TorchModel.h" />
     <ClInclude Include="TorchModelFactory.h" />
@@ -140,10 +145,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fwd.cpp" />
+    <ClCompile Include="test_RAPIQUE_spatial_features.cpp" />
+    <ClCompile Include="test_est_GGD_param.cpp" />
+    <ClCompile Include="test_gen_Dog.cpp" />
     <ClCompile Include="ImageProcessorFactory.h" />
+    <ClCompile Include="test_calc_RAPIQUE_features.cpp" />
+    <ClCompile Include="test_est_AGGD_param.cpp" />
+    <ClCompile Include="test_nakafit.cpp" />
+    <ClCompile Include="test_rapique_basic_extractor.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.8.targets" />
+    <Import Project="packages\google-testmock.1.14.0\build\native\google-testmock.targets" Condition="Exists('packages\google-testmock.1.14.0\build\native\google-testmock.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\google-testmock.1.14.0\build\native\google-testmock.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\google-testmock.1.14.0\build\native\google-testmock.targets'))" />
+  </Target>
 </Project>

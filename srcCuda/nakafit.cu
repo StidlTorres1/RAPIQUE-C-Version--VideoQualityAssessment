@@ -14,6 +14,12 @@ std::vector<double> nakafit(const std::vector<double>& data) {
     const auto n = data.size();
     const double mean = std::accumulate(data.begin(), data.end(), 0.0) / n;
 
+    if (n == 1) {
+        // Special case for single element input
+        logger.stopTimer(video_name_global, "nakafit");
+        return { mean, std::numeric_limits<double>::infinity() };
+    }
+
     const double sq_sum = std::inner_product(data.begin(), data.end(), data.begin(), 0.0,
         std::plus<>(),
         [mean](double a, double b) { return (a - mean) * (b - mean); });

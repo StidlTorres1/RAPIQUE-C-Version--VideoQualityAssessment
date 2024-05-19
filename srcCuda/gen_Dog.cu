@@ -5,9 +5,17 @@
 #include <opencv2/cudafilters.hpp>
 #include "Logger.h"
 #include "Globals.h"
+
 using namespace std;
 
 pair<vector<cv::cuda::GpuMat>, vector<cv::cuda::GpuMat>> gen_DoG(const cv::cuda::GpuMat& d_img, int kband) {
+    if (d_img.empty()) {
+        throw invalid_argument("Input image is empty.");
+    }
+    if (kband <= 0) {
+        throw invalid_argument("kband must be positive.");
+    }
+
     logger.startTimer(video_name_global, "gen_DoG");
     constexpr double kval = 1.6;
     vector<cv::cuda::GpuMat> gspace_img(kband);
@@ -49,4 +57,3 @@ pair<vector<cv::cuda::GpuMat>, vector<cv::cuda::GpuMat>> gen_DoG(const cv::cuda:
         throw;
     }
 }
-
