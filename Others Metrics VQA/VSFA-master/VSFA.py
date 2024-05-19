@@ -20,7 +20,7 @@ import random
 from scipy import stats
 from tensorboardX import SummaryWriter
 import datetime
-
+import scipy.io
 
 class VQADataset(Dataset):
     def __init__(self, features_dir='CNN_features_KoNViD-1k/', index=None, max_len=240, feat_dim=4096, scale=1):
@@ -150,27 +150,63 @@ if __name__ == "__main__":
     if args.database == 'LIVE-Qualcomm':
         features_dir = 'CNN_features_LIVE-Qualcomm/'
         datainfo = 'data/LIVE-Qualcomminfo.mat'
+    if args.database == 'all_combined':
+        features_dir = 'CNN_features_all_combined/'
+        datainfo = 'data/all_combined_light.mat'
 
     print('EXP ID: {}'.format(args.exp_id))
     print(args.database)
     print(args.model)
 
     device = torch.device("cuda" if not args.disable_gpu and torch.cuda.is_available() else "cpu")
-
+    '''
     Info = h5py.File(datainfo, 'r')  # index, ref_ids
     index = Info['index']
     index = index[:, args.exp_id % index.shape[1]]  # np.random.permutation(N)
     ref_ids = Info['ref_ids'][0, :]  #
     max_len = int(Info['max_len'][0])
+    '''
+    mat_data = scipy.io.loadmat(datainfo)
+    # Acceder a la estructura 'all_combined' dentro del archivo .mat
+    all_combined_data = mat_data['all_combined']
+    index_matrix = np.zeros((300, 156), dtype=int)
+    # Rellena cada fila con una permutación aleatoria de los números del 1 al 156
+    for i in range(300):
+        index_matrix[i] = np.random.permutation(np.arange(1, 156 + 1))
+    index = index_matrix[:, args.exp_id % index_matrix.shape[1]]
+    print(index_matrix)
+    print((index))
+    ref_ids = np.arange(1, 157)
+    max_len = 775  # int(Info['max_len'][0])
+
     trainindex = index[0:int(np.ceil((1 - args.test_ratio - args.val_ratio) * len(index)))]
     testindex = index[int(np.ceil((1 - args.test_ratio) * len(index))):len(index)]
     train_index, val_index, test_index = [], [], []
-    for i in range(len(ref_ids)):
+    print("set entrenamiento")
+    print(trainindex)
+    print("set prueba")
+    print(testindex)
+    print("len refids = " + str(len(ref_ids)))
+    '''
+        for i in range(len(ref_ids)):
         train_index.append(i) if (ref_ids[i] in trainindex) else \
             test_index.append(i) if (ref_ids[i] in testindex) else \
                 val_index.append(i)
-
-    scale = Info['scores'][0, :].max()  # label normalization factor
+    '''
+    for i in range(len(ref_ids)):
+        if ref_ids[i] in trainindex:
+            train_index.append(i)
+        elif ref_ids[i] in testindex:
+            test_index.append(i)
+        else:
+            val_index.append(i)
+    print("len train_index = " + str(len(train_index)))  # Debe ser cercano a 156 * (1 - test_ratio - val_ratio)
+    print("len test_index = " + str(len(test_index)))  # Debe ser cercano a 156 * test_ratio
+    print("len val_index = " + str(len(val_index)))  # Debe ser cercano a 156 * val_ratio
+    mos = all_combined_data['mos'][0, 0]  # Accede al campo 'MOS'
+    scores = mos[0]
+    scale = scores.max()
+    #scale = Info['scores'][0, :].max()  # label normalization factor
     train_dataset = VQADataset(features_dir, train_index, max_len, scale=scale)
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=args.batch_size, shuffle=True)
     val_dataset = VQADataset(features_dir, val_index, max_len, scale=scale)
@@ -192,7 +228,7 @@ if __name__ == "__main__":
         writer = SummaryWriter(log_dir='{}/EXP{}-{}-{}-{}-{}-{}-{}'
                                .format(args.log_dir, args.exp_id, args.database, args.model,
                                        args.lr, args.batch_size, args.epochs,
-                                       datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")))
+                                       datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")))
 
     criterion = nn.L1Loss()  # L1 loss
     optimizer = Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
@@ -227,6 +263,8 @@ if __name__ == "__main__":
                 y_pred[i] = scale * outputs.item()
                 loss = criterion(outputs, label)
                 L = L + loss.item()
+        print("ypred len> "+ str(len(y_pred)))
+        print("yval len> "+ str(len(y_val)))
         val_loss = L / (i + 1)
         val_PLCC = stats.pearsonr(y_pred, y_val)[0]
         val_SROCC = stats.spearmanr(y_pred, y_val)[0]
@@ -275,7 +313,18 @@ if __name__ == "__main__":
             if args.test_ratio > 0 and not args.notest_during_training:
                 print("Test results: test loss={:.4f}, SROCC={:.4f}, KROCC={:.4f}, PLCC={:.4f}, RMSE={:.4f}"
                       .format(test_loss, SROCC, KROCC, PLCC, RMSE))
-                np.save(save_result_file, (y_pred, y_test, test_loss, SROCC, KROCC, PLCC, RMSE, test_index))
+                data_dict = {
+                    'y_pred': y_pred,
+                    'y_test': y_test,
+                    'test_loss': test_loss,
+                    'SROCC': SROCC,
+                    'KROCC': KROCC,
+                    'PLCC': PLCC,
+                    'RMSE': RMSE,
+                    'test_index': test_index
+                }
+
+                np.save(save_result_file, data_dict)
             torch.save(model.state_dict(), trained_model_file)
             best_val_criterion = val_SROCC  # update best val SROCC
 
@@ -302,4 +351,15 @@ if __name__ == "__main__":
         KROCC = stats.stats.kendalltau(y_pred, y_test)[0]
         print("Test results: test loss={:.4f}, SROCC={:.4f}, KROCC={:.4f}, PLCC={:.4f}, RMSE={:.4f}"
               .format(test_loss, SROCC, KROCC, PLCC, RMSE))
-        np.save(save_result_file, (y_pred, y_test, test_loss, SROCC, KROCC, PLCC, RMSE, test_index))
+        data_dict = {
+            'y_pred': y_pred,
+            'y_test': y_test,
+            'test_loss': test_loss,
+            'SROCC': SROCC,
+            'KROCC': KROCC,
+            'PLCC': PLCC,
+            'RMSE': RMSE,
+            'test_index': test_index
+        }
+
+        np.save(save_result_file, data_dict)

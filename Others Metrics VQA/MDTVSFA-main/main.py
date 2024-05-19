@@ -47,13 +47,18 @@ def run(args):
             evaluator.run(test_loader[dataset])
             performance[dataset] = evaluator.state.metrics['VQA_performance']
             print('{}, SROCC: {}'.format(dataset, performance[dataset]['SROCC']))
+            print('{}, KROCC: {}'.format(dataset, performance[dataset]['KROCC']))
+            print('{}, PLCC: {}'.format(dataset, performance[dataset]['PLCC']))
+            print('{}, RMSE: {}'.format(dataset, performance[dataset]['RMSE']))
         np.save(args.save_result_file, performance)
         return
 
     writer = SummaryWriter(log_dir='{}/EXP{}-{}-{}-{}-{}-{}-{}-{}-{}-{}'
                            .format(args.log_dir, args.exp_id, args.model, args.feature_extractor, args.loss, args.train_proportion, args.datasets['train'],
                                    args.lr, args.batch_size, args.epochs,
-                                   datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")))
+                                   datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")))
+
+
 
     global best_val_criterion, best_epoch
     best_val_criterion, best_epoch = -100, -1  # larger, better, e.g., SROCC/KROCC/PLCC
@@ -77,6 +82,7 @@ def run(args):
             performance = evaluator.state.metrics['VQA_performance']
             writer_add_scalar(writer, 'test', dataset, performance, engine.state.epoch)
 
+
         global best_val_criterion, best_epoch
         if val_criterion > best_val_criterion:
             torch.save(model.state_dict(), args.trained_model_file)
@@ -95,6 +101,9 @@ def run(args):
             evaluator.run(test_loader[dataset])
             performance[dataset] = evaluator.state.metrics['VQA_performance']
             print('{}, SROCC: {}'.format(dataset, performance[dataset]['SROCC']))
+            print('{}, KROCC: {}'.format(dataset, performance[dataset]['KROCC']))
+            print('{}, PLCC: {}'.format(dataset, performance[dataset]['PLCC']))
+            print('{}, RMSE: {}'.format(dataset, performance[dataset]['RMSE']))
         np.save(args.save_result_file, performance)
 
     trainer.run(train_loader, max_epochs=args.epochs)
@@ -154,6 +163,12 @@ if __name__ == "__main__":
     args.decay_interval = int(args.epochs / 20)
     args.decay_ratio = 0.8
 
+    args.datasets = {'train': ['A'],
+                     'val': ['A'],
+                     'test': ['A']}
+    args.features_dir = {'A': 'CNN_features_all_combined/'}
+    args.data_info = {'A': 'data/all_combined_light.mat'}
+    '''
     args.datasets = {'train': args.trained_datasets,
                      'val': args.trained_datasets,
                      'test': ['K', 'C', 'L', 'N']}
@@ -165,6 +180,8 @@ if __name__ == "__main__":
                       'C': 'data/CVD2014info.mat',
                       'L': 'data/LIVE-Qualcomminfo.mat',
                       'N': 'data/LIVE-VQCinfo.mat'}
+    '''
+
 
     torch.manual_seed(args.seed)  #
     torch.backends.cudnn.deterministic = True

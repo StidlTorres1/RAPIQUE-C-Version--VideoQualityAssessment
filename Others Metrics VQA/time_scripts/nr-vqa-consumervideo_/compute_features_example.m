@@ -4,16 +4,16 @@
 tic;  % Start timing the entire script
 
 % Read subjective data
-data = load('.\qualcommSubjectiveData.mat');
+data = load('all_combined_metadata.mat');
 frates = 30;
 reso = [1920 1080];
 
 % Open feature file for output
-feature_file = '.\LIVE_features.csv'; 
+feature_file = '.\nr-vqa_features.csv'; 
 fid_ftr = fopen(feature_file,'w+');
 
 % Loop through all the video files in the database
-for z=1:length(data.qualcommVideoData.vidNames)
+for z=180:length(data.flickr_id.vidNames)
 
     yuv_path = '.';
     full_yuv_path = sprintf('%s/%s', yuv_path, ...
@@ -22,7 +22,9 @@ for z=1:length(data.qualcommVideoData.vidNames)
     % Compute features for each video file
     fprintf('Computing features for sequence: %s\n',full_yuv_path);
     tic
+    tstart = cputime;
     features = compute_nrvqa_features(full_yuv_path, reso, frates);
+    tend = tstart - cputime
     toc
     
     % Write features to csv file for further processing

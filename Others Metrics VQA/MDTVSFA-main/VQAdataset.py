@@ -2,6 +2,7 @@ import h5py
 import torch
 from torch.utils.data import Dataset
 import numpy as np
+import scipy.io
 
 
 class VQADataset(Dataset):
@@ -17,16 +18,28 @@ class VQADataset(Dataset):
         self.index = dict()
 
         for dataset in datasets:
-            Info = h5py.File(args.data_info[dataset], 'r')
-            max_len[dataset] = int(Info['max_len'][0])
+            #Info = h5py.File(args.data_info[dataset], 'r')
+            # Cargar el archivo .mat
+            mat_data = scipy.io.loadmat(args.data_info[dataset])
+            # Acceder a la estructura 'all_combined' dentro del archivo .mat
+            all_combined_data = mat_data['all_combined']
+            max_len[dataset] = 775 #int(Info['max_len'][0])
 
-            self.M[dataset] = Info['scores'][0, :].max()
-            self.m[dataset] = Info['scores'][0, :].min()
+            mos = all_combined_data['mos'][0, 0]  # Accede al campo 'MOS'
+            scores = mos[0]
+            self.M[dataset] = scores.max() #Info['scores'][0, :].max()
+            self.m[dataset] = scores.min()#Info['scores'][0, :].min()
             self.scale[dataset] = self.M[dataset] - self.m[dataset]
 
-            index = Info['index']
-            index = index[:, args.exp_id % index.shape[1]]
-            ref_ids = Info['ref_ids'][0, :]
+            #index = Info['index']
+            index_matrix = np.zeros((1000, 156), dtype=int)
+            # Rellena cada fila con una permutación aleatoria de los números del 1 al 156
+            for i in range(1000):
+                index_matrix[i] = np.random.permutation(np.arange(1, 156 + 1))
+            index = index_matrix[:, args.exp_id % index_matrix.shape[1]]
+
+            #ref_ids = Info['ref_ids'][0, :]
+            ref_ids = np.arange(1, 157)
             if status == 'train':
                 index = index[0:int(args.train_proportion * args.train_ratio * len(index))]
             elif status == 'val':
@@ -47,7 +60,7 @@ class VQADataset(Dataset):
             N = len(self.index[dataset])
             self.N[dataset] = N
             self.features[dataset] = np.zeros((N, max_len_all, args.feat_dim), dtype=np.float32)
-            self.length[dataset] = np.zeros(N, dtype=np.int)
+            self.length[dataset] = np.zeros(N, dtype=int)
             self.label[dataset] = np.zeros((N, 1), dtype=np.float32)
             self.KCL[dataset] = []
             for i in range(N):
@@ -78,7 +91,7 @@ def get_data_loaders(args):
     train_loader = torch.utils.data.DataLoader(train_dataset,
                                                batch_size=args.batch_size,
                                                shuffle=True,
-                                               num_workers=2,
+                                               num_workers=0,
                                                drop_last=True)  #
 
     scale = train_dataset.scale

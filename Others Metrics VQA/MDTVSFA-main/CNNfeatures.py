@@ -15,7 +15,7 @@ import h5py
 import numpy as np
 import random
 import time
-
+import scipy.io
 
 class VideoDataset(Dataset):
     """Read data from the original dataset for feature extraction"""
@@ -171,12 +171,31 @@ if __name__ == "__main__":
         videos_dir = 'LIVE-VQC/' #  /media/ldq/Others/Data/LIVE\ Video\ Quality\ Challenge\ \(VQC\)\ Database/Video LIVE-VQC
         features_dir = 'CNN_features_LIVE-VQC/'
         datainfo = 'data/LIVE-VQCinfo.mat'
+    if args.database == 'all_combined':
+        videos_dir = 'X:\\RAPIQUE_proyecto\\RAPIQUE-project\\RAPIQUE-VideoQualityAssessment\\dataBase\\databaseall\\all_combined' #  /media/ldq/Others/Data/LIVE\ Video\ Quality\ Challenge\ \(VQC\)\ Database/Video LIVE-VQC
+        features_dir = 'CNN_features_all_combined/'
+        datainfo = 'data/all_combined_light.mat'
 
     if not os.path.exists(features_dir):
         os.makedirs(features_dir)
 
     device = torch.device("cuda" if not args.disable_gpu and torch.cuda.is_available() else "cpu")
 
+    # Cargar el archivo .mat
+    mat_data = scipy.io.loadmat(datainfo)
+
+    # Acceder a la estructura 'all_combined' dentro del archivo .mat
+    all_combined_data = mat_data['all_combined']
+
+    flickr_id = all_combined_data['flickr_id'][0, 0]  # Accede al campo 'flickr_id'
+    video_names = [str(flickr_id[0, i][0]) for i in range(flickr_id.shape[1])]
+    mos = all_combined_data['mos'][0, 0]  # Accede al campo 'MOS'
+    scores = mos[0]
+    #video_format = str(all_combined_data['video_format'][0, 0][0])
+    width = int(all_combined_data['width'][0, 0][0, 0])
+    height = int(all_combined_data['height'][0, 0][0, 0])
+    dataset = VideoDataset(videos_dir, video_names, scores, width = width, height = height)
+    '''
     Info = h5py.File(datainfo, 'r')
     video_names = [Info[Info['video_names'][0, :][i]][()].tobytes()[::2].decode() for i in range(len(Info['video_names'][0, :]))]
     scores = Info['scores'][0, :]
@@ -184,6 +203,8 @@ if __name__ == "__main__":
     width = int(Info['width'][0])
     height = int(Info['height'][0])
     dataset = VideoDataset(videos_dir, video_names, scores, video_format, width, height)
+
+    '''
 
     max_len = 0
     # extract feature on LIVE-Qualcomm using AlexNet will cause the error of "cannot allocate memory"
@@ -193,7 +214,7 @@ if __name__ == "__main__":
         CUDA_VISIBLE_DEVICES=0 python CNNfeatures.py --ith=$i --model=AlexNet --database=LIVE-Qualcomm
     done
     """
-    for i in range(args.ith, len(dataset)): # range(args.ith, args.ith+1): # 
+    for i in range(args.ith, len(dataset)):  # range(args.ith, args.ith+1):  #
         start = time.time()
         current_data = dataset[i]
         print('Video {}: length {}'.format(i, current_data['video'].shape[0]))

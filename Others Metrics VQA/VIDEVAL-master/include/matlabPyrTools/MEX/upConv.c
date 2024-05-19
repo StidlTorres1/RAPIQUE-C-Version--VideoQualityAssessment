@@ -7,9 +7,9 @@ RES = upConv(IM, FILT, EDGES, STEP, START, STOP, RES);
 
 #define V4_COMPAT
 #include <matrix.h>  /* Matlab matrices */
-#include <mex.h>
+include <mex.h>
 
-#include "convolve.h"
+include "convolve.h"
 
 #define notDblMtx(it) (!mxIsNumeric(it) || !mxIsDouble(it) || mxIsSparse(it) || mxIsComplex(it))
 

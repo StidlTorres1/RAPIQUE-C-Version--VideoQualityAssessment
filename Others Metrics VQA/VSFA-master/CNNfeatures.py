@@ -15,6 +15,7 @@ import skvideo.io
 from PIL import Image
 import os
 import h5py
+import scipy.io
 import numpy as np
 import random
 from argparse import ArgumentParser
@@ -149,12 +150,30 @@ if __name__ == "__main__":
         videos_dir = '/media/ldq/Others/Data/12.LIVE-Qualcomm Mobile In-Capture Video Quality Database/'
         features_dir = 'CNN_features_LIVE-Qualcomm/'
         datainfo = 'data/LIVE-Qualcomminfo.mat'
+    if args.database == 'all_combined':
+        videos_dir = 'X:\\RAPIQUE_proyecto\\RAPIQUE-project\\RAPIQUE-VideoQualityAssessment\\dataBase\\databaseall\\all_combined' #  /media/ldq/Others/Data/LIVE\ Video\ Quality\ Challenge\ \(VQC\)\ Database/Video LIVE-VQC
+        features_dir = 'CNN_features_all_combined/'
+        datainfo = 'data/all_combined_light.mat'
 
     if not os.path.exists(features_dir):
         os.makedirs(features_dir)
 
     device = torch.device("cuda" if not args.disable_gpu and torch.cuda.is_available() else "cpu")
+    # Cargar el archivo .mat
+    mat_data = scipy.io.loadmat(datainfo)
 
+    # Acceder a la estructura 'all_combined' dentro del archivo .mat
+    all_combined_data = mat_data['all_combined']
+
+    flickr_id = all_combined_data['flickr_id'][0, 0]  # Accede al campo 'flickr_id'
+    video_names = [str(flickr_id[0, i][0]) for i in range(flickr_id.shape[1])]
+    mos = all_combined_data['mos'][0, 0]  # Accede al campo 'MOS'
+    scores = mos[0]
+    # video_format = str(all_combined_data['video_format'][0, 0][0])
+    width = int(all_combined_data['width'][0, 0][0, 0])
+    height = int(all_combined_data['height'][0, 0][0, 0])
+    dataset = VideoDataset(videos_dir, video_names, scores, width=width, height=height)
+    '''
     Info = h5py.File(datainfo, 'r')
     video_names = [Info[Info['video_names'][0, :][i]][()].tobytes()[::2].decode() for i in range(len(Info['video_names'][0, :]))]
     scores = Info['scores'][0, :]
@@ -162,6 +181,7 @@ if __name__ == "__main__":
     width = int(Info['width'][0])
     height = int(Info['height'][0])
     dataset = VideoDataset(videos_dir, video_names, scores, video_format, width, height)
+    '''
 
     for i in range(len(dataset)):
         current_data = dataset[i]

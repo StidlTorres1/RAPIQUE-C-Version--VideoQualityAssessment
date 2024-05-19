@@ -1,6 +1,7 @@
 %%
 % Compute features for a set of video files from datasets
 % 
+tic;
 close all; 
 clear;
 warning('off','all');
@@ -10,7 +11,7 @@ addpath(genpath('include'));
 %%
 % parameters
 algo_name = 'VIDEVAL'; % algorithm name, eg, 'V-BLIINDS'
-data_name = 'TEST_VIDEOS';  % dataset name, eg, 'KONVID_1K'
+data_name = 'all_combined';  % dataset name, eg, 'KONVID_1K'
 
 %% *You need to customize here*
 if strcmp(data_name, 'TEST_VIDEOS')
@@ -23,6 +24,8 @@ elseif strcmp(data_name, 'YOUTUBE_UGC')
     data_path = '/media/ztu/Seagate-ztu-ugc/YT_UGC/original_videos';
 elseif strcmp(data_name, 'LIVE_VQA')
     data_path = '/media/ztu/Seagate-ztu/LIVE_VQA/videos';
+elseif strcmp(data_name, 'all_combined')
+    data_path = 'X:\RAPIQUE_proyecto\RAPIQUE-project\RAPIQUE-VideoQualityAssessment\dataBase\databaseall\all_combined';
 end
 
 %%
@@ -59,6 +62,11 @@ for i = 1:num_videos
             strs = strsplit(filelist.filename{i}, '_');
             video_name = fullfile(data_path, [strs{1}(1:2), '_Folder'], filelist.filename{i});
             yuv_name = video_name;
+        elseif strcmp(data_name, 'all_combined')
+            video_name = fullfile(data_path, ...
+            filelist.flickr_id{i});
+            [~, nombreSinExtension, ~] = fileparts(filelist.flickr_id{i});
+            yuv_name = fullfile(video_tmp, [nombreSinExtension, '.yuv']);
         end
         fprintf('\n---\nComputing features for %d-th sequence: %s\n', i, video_name);
 
@@ -89,4 +97,5 @@ end
 % save feature matrix
 save(out_feat_name, 'feats_mat');
 
+toc;
 

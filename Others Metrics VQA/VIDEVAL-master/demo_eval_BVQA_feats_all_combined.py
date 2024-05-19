@@ -46,7 +46,7 @@ warnings.filterwarnings("ignore")
 '''======================== parameters ================================''' 
 
 model_name = 'SVR' # regression model
-data_name = 'ALL_COMBINED' # dataset name
+data_name = 'all_combined' # dataset name
 algo_name = 'VIDEVAL' # evaluated model
 color_only = True # if True, YouTube-UGCc dataset; if False, YouTube-UGC
 use_inlsa = True # if True, apply INLSA calibration of MOS.
@@ -57,24 +57,25 @@ print("Evaluating algorithm {} with {} on dataset {} ...".format(algo_name,
 
 '''======================== read files =============================== '''
 ## read KONVID_1K
-data_name = 'KONVID_1K'
+data_name = 'all_combined'
 csv_file = os.path.join('features', data_name+'_metadata.csv')
 mat_file = os.path.join('features', data_name+'_'+algo_name+'_feats.mat')
 df = pandas.read_csv(csv_file, skiprows=[], header=None)
 array = df.values
-y1 = array[1:,1]
-y1 = np.array(list(y1), dtype=np.float)
+y = array[1:,1]
+y = np.array(list(y), dtype=float)
 X_mat = scipy.io.loadmat(mat_file)
-X1 = np.asarray(X_mat['feats_mat'], dtype=np.float)
-X1[np.isnan(X1)] = 0
-X1[np.isinf(X1)] = 0
+X = np.asarray(X_mat['feats_mat'], dtype=float)
+X[np.isnan(X)] = 0
+X[np.isinf(X)] = 0
 if use_inlsa:
     # apply scaling transform
-    temp = np.divide(5.0 - y1, 4.0) # convert MOS do distortion
+    temp = np.divide(5.0 - y, 4.0) # convert MOS do distortion
     temp = -0.0993 + 1.1241 * temp # apply gain and shift produced by INSLA
     temp = 5.0 - 4.0 * temp # convert distortion to MOS
-    y1 = temp
+    y = temp
 
+'''
 ## read LIVE-VQC
 data_name = 'LIVE_VQC'
 csv_file = os.path.join('features', data_name+'_metadata.csv')
@@ -82,9 +83,9 @@ mat_file = os.path.join('features', data_name+'_'+algo_name+'_feats.mat')
 df = pandas.read_csv(csv_file, skiprows=[], header=None)
 array = df.values  
 y2 = array[1:,1]
-y2 = np.array(list(y2), dtype=np.float)
+y2 = np.array(list(y2), dtype=float)
 X_mat = scipy.io.loadmat(mat_file)
-X2 = np.asarray(X_mat['feats_mat'], dtype=np.float)
+X2 = np.asarray(X_mat['feats_mat'], dtype=float)
 X2[np.isnan(X2)] = 0
 X2[np.isinf(X2)] = 0
 
@@ -105,9 +106,9 @@ mat_file = os.path.join('features', data_name+'_'+algo_name+'_feats.mat')
 df = pandas.read_csv(csv_file, skiprows=[], header=None)
 array = df.values  
 y3 = array[1:,4]
-y3 = np.array(list(y3), dtype=np.float)
+y3 = np.array(list(y3), dtype=float)
 X_mat = scipy.io.loadmat(mat_file)
-X3 = np.asarray(X_mat['feats_mat'], dtype=np.float)
+X3 = np.asarray(X_mat['feats_mat'], dtype=float)
 X3[np.isnan(X3)] = 0
 X3[np.isinf(X3)] = 0
 #### 57 grayscale videos in YOUTUBE_UGC dataset, we do not consider them for fair comparison ####
@@ -123,6 +124,7 @@ X = np.vstack((X1, X2, X3))
 y = np.vstack((y1.reshape(-1,1), y2.reshape(-1,1), y3.reshape(-1,1))).squeeze()
 
 
+'''
 '''======================== Main Body ===========================''' 
 
 model_params_all_repeats = []
@@ -201,8 +203,8 @@ for i in range(1,101):
                 logisticPart = 1 + np.exp(np.negative(np.divide(X - bayta3, np.abs(bayta4))))
                 yhat = bayta2 + np.divide(bayta1 - bayta2, logisticPart)
                 return yhat
-            y_param_valid = np.array(list(y_param_valid), dtype=np.float)
-            y_param_train = np.array(list(y_param_train), dtype=np.float)
+            y_param_valid = np.array(list(y_param_valid), dtype=float)
+            y_param_train = np.array(list(y_param_train), dtype=float)
             try:
                 # logistic regression
                 beta = [np.max(y_param_valid), np.min(y_param_valid), np.mean(y_param_valid_pred), 0.5]
@@ -238,7 +240,7 @@ for i in range(1,101):
             KRCC_all_train.append(krcc_train_tmp)
 
     # using the best chosen parameters to test on testing set
-    param_idx = np.argmin(np.asarray(RMSE_all_test, dtype=np.float))
+    param_idx = np.argmin(np.asarray(RMSE_all_test, dtype=float))
     C_opt, gamma_opt = model_params_all[param_idx]
     if algo_name == 'CORNIA10K' or \
         algo_name == 'HOSA':
@@ -258,8 +260,8 @@ for i in range(1,101):
     # Predict MOS for the validation set
     y_test_pred = model.predict(X_test)
     y_train_pred = model.predict(X_train)
-    y_test = np.array(list(y_test), dtype=np.float)
-    y_train = np.array(list(y_train), dtype=np.float)
+    y_test = np.array(list(y_test), dtype=float)
+    y_train = np.array(list(y_train), dtype=float)
     try:
         # logistic regression
         beta = [np.max(y_test), np.min(y_test), np.mean(y_test_pred), 0.5]
@@ -330,12 +332,12 @@ print('\n\n')
 #================================================================================
 # save mats
 scipy.io.savemat(result_file, \
-    mdict={'SRCC_train': np.asarray(SRCC_all_repeats_train,dtype=np.float), \
-        'KRCC_train': np.asarray(KRCC_all_repeats_train,dtype=np.float), \
-        'PLCC_train': np.asarray(PLCC_all_repeats_train,dtype=np.float), \
-        'RMSE_train': np.asarray(RMSE_all_repeats_train,dtype=np.float), \
-        'SRCC_test': np.asarray(SRCC_all_repeats_test,dtype=np.float), \
-        'KRCC_test': np.asarray(KRCC_all_repeats_test,dtype=np.float), \
-        'PLCC_test': np.asarray(PLCC_all_repeats_test,dtype=np.float), \
-        'RMSE_test': np.asarray(RMSE_all_repeats_test,dtype=np.float),\
+    mdict={'SRCC_train': np.asarray(SRCC_all_repeats_train,dtype=float), \
+        'KRCC_train': np.asarray(KRCC_all_repeats_train,dtype=float), \
+        'PLCC_train': np.asarray(PLCC_all_repeats_train,dtype=float), \
+        'RMSE_train': np.asarray(RMSE_all_repeats_train,dtype=float), \
+        'SRCC_test': np.asarray(SRCC_all_repeats_test,dtype=float), \
+        'KRCC_test': np.asarray(KRCC_all_repeats_test,dtype=float), \
+        'PLCC_test': np.asarray(PLCC_all_repeats_test,dtype=float), \
+        'RMSE_test': np.asarray(RMSE_all_repeats_test,dtype=float),\
     })

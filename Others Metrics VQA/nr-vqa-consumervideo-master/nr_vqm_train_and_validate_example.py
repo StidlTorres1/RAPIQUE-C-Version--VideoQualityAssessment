@@ -9,7 +9,7 @@ Author: Jari Korhonen, Shenzhen University
 # Load libraries
 import pandas
 import random as rnd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import scipy.stats
 from sklearn import model_selection
 from sklearn.ensemble import RandomForestRegressor
@@ -31,7 +31,7 @@ def train_and_validate(seednum):
     # For this, you need to compute them first using Matlab script
     # compute_features_example.m   
     #
-    df = pandas.read_csv("./LIVE_features.csv", skiprows=[], header=None)       
+    df = pandas.read_csv("nr-vqa-consumervideo_features.csv", skiprows=[], header=None)
     array = df.values  
     y = array[:,0]
     X = array[:,2:]  
