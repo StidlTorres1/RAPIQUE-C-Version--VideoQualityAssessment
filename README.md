@@ -222,7 +222,179 @@ Download the **LibTorch 2.2.0 debug version for cuda 11.8** from [here](https://
 ### Running the Project
 - After successfully building the project, you can run it by clicking on the "Local Windows Debugger" button on the toolbar, or by pressing F5. This starts the application with debugging enabled.
 If you prefer to run without debugging, use Ctrl+F5 instead.
+### The test branch
+This branch allows you to test different properties on the functions. When running, the console displays which tests passed or failed. In order to run it, you must install Google Test dependencies following the steps below:
+* Go to Project > Manage NuGet packages
+* Search for google test and google mock packages
+* Install by clicking on the arror and follow the steps
 
+
+# Tests suite and it's properties
+## 1. CudaImageProcessorTest
+Total de Pruebas: 3
+Tiempo Total: 811 ms
+### Pruebas
+### ApplyFilter
+
+Descripción: Prueba la aplicación de un filtro a una imagen usando CUDA.
+Parámetros:
+Tipo de filtro: 5
+Tamaño del filtro: [3 x 3]
+Tamaño de la imagen de entrada y resultado: [256 x 256]
+Resultados: La aplicación del filtro fue validada comparando las imágenes de entrada y salida. Ambas coincidieron, lo que indica que el filtro se aplicó correctamente.
+Tiempo de Ejecución: 754 ms
+### Multiply
+
+Descripción: Prueba la operación de multiplicación en imágenes usando CUDA.
+Tiempo de Ejecución: 34 ms
+### CircularShift
+
+Descripción: Prueba la operación de desplazamiento circular en imágenes usando CUDA.
+Tiempo de Ejecución: 16 ms
+## 2. RAPIQUESpatialFeaturesTest
+Total de Pruebas: 2
+Tiempo Total: 1078 ms
+Pruebas
+### ValidImageInput
+
+Descripción: Prueba la extracción de características espaciales de una imagen válida.
+Tiempo de Ejecución: 1067 ms
+### EmptyImageInput
+
+Descripción: Prueba el comportamiento cuando se proporciona una imagen vacía como entrada.
+Resultado: Se registró un mensaje apropiado, indicando el manejo correcto de la entrada vacía.
+Tiempo de Ejecución: 7 ms
+## 3. EstGGDParamTest
+Total de Pruebas: 3
+Tiempo Total: 13 ms
+Pruebas
+### NonEmptyInput
+
+Descripción: Prueba la estimación de parámetros a partir de una entrada no vacía.
+Tiempo de Ejecución: 4 ms
+### EmptyInput
+
+Descripción: Prueba la estimación de parámetros a partir de una entrada vacía.
+Tiempo de Ejecución: 0 ms
+# SingleValueInput
+
+Descripción: Prueba la estimación de parámetros a partir de una entrada de un solo valor.
+Tiempo de Ejecución: 1 ms
+## 4. GenDoGTest
+Total de Pruebas: 2
+Tiempo Total: 64 ms
+Pruebas
+### ValidInput
+
+Descripción: Prueba la generación de DoG (Diferencia de Gauss) con entrada válida.
+Tiempo de Ejecución: 54 ms
+### InvalidInput
+
+Descripción: Prueba la generación de DoG con entrada inválida.
+Tiempo de Ejecución: 5 ms
+## 5. CalcRAPIQUEFeaturesTest
+Total de Pruebas: 1
+Tiempo Total: 35358 ms
+Pruebas
+### CalcRAPIQUEFeatures
+Descripción: Prueba el cálculo de características RAPIQUE a partir de cuadros de video.
+Detalles:
+Tamaño del vector de características: 3884
+La ejecución incluye la carga de modelos y el cálculo de vectores de características para múltiples cuadros.
+Tiempo de Ejecución: 35354 ms
+## 6. EstAGGDParamTestSuite
+Total de Pruebas: 3
+Tiempo Total: 71 ms
+Pruebas
+### CalculateStdDev
+
+Descripción: Prueba el cálculo de desviaciones estándar.
+Resultados: Las desviaciones estándar calculadas coincidieron con los valores esperados.
+Tiempo de Ejecución: 30 ms
+### GenerateGam
+
+Descripción: Prueba la generación de GAM (Modelo Autorregresivo Generalizado).
+Tiempo de Ejecución: 3 ms
+### EstAGGDParam
+
+Descripción: Prueba la estimación de parámetros AGGD (Distribución Gaussiana Generalizada Asimétrica).
+Tiempo de Ejecución: 20 ms
+## 7. NakafitTest
+Total de Pruebas: 3
+Tiempo Total: 28 ms
+Pruebas
+### NonEmptyInput
+
+Descripción: Prueba el ajuste de parámetros con entrada no vacía.
+Tiempo de Ejecución: 0 ms
+### EmptyInput
+
+Descripción: Prueba el ajuste de parámetros con entrada vacía.
+Tiempo de Ejecución: 0 ms
+### SingleValueInput
+
+Descripción: Prueba el ajuste de parámetros con entrada de un solo valor.
+Tiempo de Ejecución: 0 ms
+## 8. RapiqueBasicExtractorTest
+Total de Pruebas: 2
+Tiempo Total: 147 ms
+Pruebas
+### ValidImageInput
+
+Descripción: Prueba la extracción de características de una imagen válida.
+Tiempo de Ejecución: 132 ms
+### EmptyImageInput
+
+Descripción: Prueba el manejo de una imagen vacía.
+Tiempo de Ejecución: 5 ms
+## 9. TimerTest
+Total de Pruebas: 4
+Tiempo Total: 564 ms
+Pruebas
+### ImmediateStart
+
+Descripción: Prueba el temporizador con un inicio inmediato.
+Tiempo de Ejecución: 111 ms
+### ManualStartStop
+
+Descripción: Prueba el temporizador con inicio y parada manual.
+Tiempo de Ejecución: 105 ms
+### ElapsedWhileRunning
+
+Descripción: Prueba el cálculo del tiempo transcurrido mientras el temporizador está en funcionamiento.
+Tiempo de Ejecución: 104 ms
+### ElapsedAfterStop
+
+Descripción: Prueba el cálculo del tiempo transcurrido después de detener el temporizador.
+Tiempo de Ejecución: 217 ms
+## 10. YUVReaderTest
+Total de Pruebas: 3
+Tiempo Total: 74 ms
+Pruebas
+### ReadImage_ValidFrame
+
+Descripción: Prueba la lectura de un cuadro válido de una imagen YUV.
+Tiempo de Ejecución: 28 ms
+### ReadImage_FrameOutOfBounds
+
+Descripción: Prueba la lectura de un cuadro fuera de los límites.
+Resultado: Se registró un mensaje de error apropiado.
+Tiempo de Ejecución: 11 ms
+### ReadImage_FileNotFound
+
+Descripción: Prueba la lectura de una imagen de un archivo inexistente.
+Resultado: Se registró un mensaje de error apropiado.
+Tiempo de Ejecución: 15 ms
+
+
+# Nvidia Nsight
+## Installation guide
+Go to https://developer.nvidia.com/nsight-visual-studio-edition and follow the installing instructions.
+
+## Use guide
+* Go to Extensions > Nsight > Nsight Compute > Profile
+* Click in ok and specify the path to your .exec, your working dir, any arguments needed for running (if applies) and environment (if applies).
+* In common, specify the output folder for the logs and then click "Launch" to start profiling.
 ### Recommendations
 - It is strongly recommended to run Visual Studio in administrator mode to avoid any permission-related issues during the build or run phases of your project.
 - Pay close attention to the Output and Error List windows in Visual Studio for any warnings or errors that may need to be addressed.
