@@ -1,4 +1,3 @@
-// CudaImageProcessor.cu
 #include "CudaImageProcessor.h"
 #include <opencv2/core/cuda.hpp>
 #include <opencv2/cudaarithm.hpp>
@@ -6,18 +5,26 @@
 
 cv::Mat CudaImageProcessor::applyFilter(const cv::Mat& img, const cv::Mat& window) {
     cv::cuda::GpuMat img_gpu(img);
-    cv::cuda::GpuMat window_gpu(window);
     cv::cuda::GpuMat result_gpu;
 
-    // Note: Create the filter with appropriate size to ensure output dimensions match input.
-    auto filter = cv::cuda::createLinearFilter(CV_32F, -1, window, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
-    filter->apply(img_gpu, result_gpu);
+    // Ensure image is in a compatible format for filter application
+    cv::cuda::GpuMat img_gpu_float;
+    img_gpu.convertTo(img_gpu_float, CV_32F);
+
+    // Create and apply the filter
+    auto filter = cv::cuda::createLinearFilter(img_gpu_float.type(), img_gpu_float.type(), window, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
+    filter->apply(img_gpu_float, result_gpu);
 
     cv::Mat result;
     result_gpu.download(result);
 
-    // Ensure the result has the same dimensions as the input image, providing a sanity check.
+    // Ensure the result has the same dimensions as the input image, providing a sanity check
     assert(result.rows == img.rows && result.cols == img.cols);
+
+    // Debug print
+    std::cout << "Filter type: " << window.type() << ", Size: " << window.size() << "\n";
+    std::cout << "Result type: " << result.type() << ", Size: " << result.size() << "\n";
+    std::cout << "Input type: " << img.type() << ", Size: " << img.size() << "\n";
 
     return result;
 }

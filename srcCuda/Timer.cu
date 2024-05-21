@@ -1,4 +1,5 @@
 #include "Timer.h"
+#include <iostream>
 
 Timer::Timer(bool start_immediately) : is_running(false) {
     if (start_immediately) {
@@ -24,5 +25,8 @@ float Timer::elapsed() {
         std::chrono::duration<float> time_span = t2_temp - t1;
         return time_span.count();
     }
-    return 0.0;
+    else {
+        std::chrono::duration<float> time_span = t2 - t1;
+        return time_span.count();
+    }
 }
