@@ -232,160 +232,162 @@ This branch allows you to test different properties on the functions. When runni
 
 # Tests suite and it's properties
 ## 1. CudaImageProcessorTest
-Total de Pruebas: 3
-Tiempo Total: 811 ms
-### Pruebas
+Total Tests: 3
+Total Time: 811 ms
+### Test
 ### ApplyFilter
 
-Descripción: Prueba la aplicación de un filtro a una imagen usando CUDA.
-Parámetros:
-Tipo de filtro: 5
-Tamaño del filtro: [3 x 3]
-Tamaño de la imagen de entrada y resultado: [256 x 256]
-Resultados: La aplicación del filtro fue validada comparando las imágenes de entrada y salida. Ambas coincidieron, lo que indica que el filtro se aplicó correctamente.
-Tiempo de Ejecución: 754 ms
+Description: Test the application of a filter to an image using CUDA.
+Parameters:
+Filter type: 5
+Filter size: [3 x 3]
+Input and result image size: [256 x 256]
+Results: The application of the filter was validated by comparing the input and output images. Both matched, indicating the filter was applied correctly.
+Execution Time: 754 ms
+
 ### Multiply
+Description: Test the multiplication operation on images using CUDA.
+Execution Time: 34 ms
 
-Descripción: Prueba la operación de multiplicación en imágenes usando CUDA.
-Tiempo de Ejecución: 34 ms
 ### CircularShift
+Description: Test the circular shift operation on images using CUDA.
+Execution Time: 16 ms
 
-Descripción: Prueba la operación de desplazamiento circular en imágenes usando CUDA.
-Tiempo de Ejecución: 16 ms
 ## 2. RAPIQUESpatialFeaturesTest
-Total de Pruebas: 2
-Tiempo Total: 1078 ms
-Pruebas
+Total Tests: 2
+Total Time: 1078 ms
+
 ### ValidImageInput
+Description: Test the extraction of spatial features from a valid image.
+Execution Time: 1067 ms
 
-Descripción: Prueba la extracción de características espaciales de una imagen válida.
-Tiempo de Ejecución: 1067 ms
 ### EmptyImageInput
+Description: Test the behavior when an empty image is provided as input.
+Result: An appropriate message was recorded, indicating the correct handling of the empty input.
+Execution Time: 7 ms
 
-Descripción: Prueba el comportamiento cuando se proporciona una imagen vacía como entrada.
-Resultado: Se registró un mensaje apropiado, indicando el manejo correcto de la entrada vacía.
-Tiempo de Ejecución: 7 ms
 ## 3. EstGGDParamTest
-Total de Pruebas: 3
-Tiempo Total: 13 ms
-Pruebas
+Total Tests: 3
+Total Time: 13 ms
+
 ### NonEmptyInput
+Description: Test the estimation of parameters from a non-empty input.
+Execution Time: 4 ms
 
-Descripción: Prueba la estimación de parámetros a partir de una entrada no vacía.
-Tiempo de Ejecución: 4 ms
 ### EmptyInput
+Description: Test the estimation of parameters from an empty input.
+Execution Time: 0 ms
 
-Descripción: Prueba la estimación de parámetros a partir de una entrada vacía.
-Tiempo de Ejecución: 0 ms
-# SingleValueInput
-
-Descripción: Prueba la estimación de parámetros a partir de una entrada de un solo valor.
-Tiempo de Ejecución: 1 ms
-## 4. GenDoGTest
-Total de Pruebas: 2
-Tiempo Total: 64 ms
-Pruebas
-### ValidInput
-
-Descripción: Prueba la generación de DoG (Diferencia de Gauss) con entrada válida.
-Tiempo de Ejecución: 54 ms
-### InvalidInput
-
-Descripción: Prueba la generación de DoG con entrada inválida.
-Tiempo de Ejecución: 5 ms
-## 5. CalcRAPIQUEFeaturesTest
-Total de Pruebas: 1
-Tiempo Total: 35358 ms
-Pruebas
-### CalcRAPIQUEFeatures
-Descripción: Prueba el cálculo de características RAPIQUE a partir de cuadros de video.
-Detalles:
-Tamaño del vector de características: 3884
-La ejecución incluye la carga de modelos y el cálculo de vectores de características para múltiples cuadros.
-Tiempo de Ejecución: 35354 ms
-## 6. EstAGGDParamTestSuite
-Total de Pruebas: 3
-Tiempo Total: 71 ms
-Pruebas
-### CalculateStdDev
-
-Descripción: Prueba el cálculo de desviaciones estándar.
-Resultados: Las desviaciones estándar calculadas coincidieron con los valores esperados.
-Tiempo de Ejecución: 30 ms
-### GenerateGam
-
-Descripción: Prueba la generación de GAM (Modelo Autorregresivo Generalizado).
-Tiempo de Ejecución: 3 ms
-### EstAGGDParam
-
-Descripción: Prueba la estimación de parámetros AGGD (Distribución Gaussiana Generalizada Asimétrica).
-Tiempo de Ejecución: 20 ms
-## 7. NakafitTest
-Total de Pruebas: 3
-Tiempo Total: 28 ms
-Pruebas
-### NonEmptyInput
-
-Descripción: Prueba el ajuste de parámetros con entrada no vacía.
-Tiempo de Ejecución: 0 ms
-### EmptyInput
-
-Descripción: Prueba el ajuste de parámetros con entrada vacía.
-Tiempo de Ejecución: 0 ms
 ### SingleValueInput
+Description: Test the estimation of parameters from a single-value input.
+Execution Time: 1 ms
 
-Descripción: Prueba el ajuste de parámetros con entrada de un solo valor.
-Tiempo de Ejecución: 0 ms
+## 4. GenDoGTest
+Total Tests: 2
+Total Time: 64 ms
+
+### ValidInput
+Description: Test the generation of DoG (Difference of Gaussian) with valid input.
+Execution Time: 54 ms
+
+### InvalidInput
+Description: Test the generation of DoG with invalid input.
+Execution Time: 5 ms
+
+## 5. CalcRAPIQUEFeaturesTest
+Total Tests: 1
+Total Time: 35358 ms
+
+### CalcRAPIQUEFeatures
+Description: Test the calculation of RAPIQUE features from video frames.
+Details:
+Feature vector size: 3884
+Execution includes loading models and calculating feature vectors for multiple frames.
+Execution Time: 35354 ms
+
+## 6. EstAGGDParamTestSuite
+Total Tests: 3
+Total Time: 71 ms
+
+### CalculateStdDev
+Description: Test the calculation of standard deviations.
+Results: The calculated standard deviations matched the expected values.
+Execution Time: 30 ms
+
+### GenerateGam
+Description: Test the generation of GAM (Generalized Autoregressive Model).
+Execution Time: 3 ms
+
+### EstAGGDParam
+Description: Test the estimation of AGGD (Asymmetric Generalized Gaussian Distribution) parameters.
+Execution Time: 20 ms
+
+## 7. NakafitTest
+Total Tests: 3
+Total Time: 28 ms
+
+### NonEmptyInput
+Description: Test parameter fitting with non-empty input.
+Execution Time: 0 ms
+
+### EmptyInput
+Description: Test parameter fitting with empty input.
+Execution Time: 0 ms
+
+### SingleValueInput
+Description: Test parameter fitting with single-value input.
+Execution Time: 0 ms
+
 ## 8. RapiqueBasicExtractorTest
-Total de Pruebas: 2
-Tiempo Total: 147 ms
-Pruebas
+Total Tests: 2
+Total Time: 147 ms
+
 ### ValidImageInput
+Description: Test the extraction of features from a valid image.
+Execution Time: 132 ms
 
-Descripción: Prueba la extracción de características de una imagen válida.
-Tiempo de Ejecución: 132 ms
 ### EmptyImageInput
+Description: Test the handling of an empty image.
+Execution Time: 5 ms
 
-Descripción: Prueba el manejo de una imagen vacía.
-Tiempo de Ejecución: 5 ms
 ## 9. TimerTest
-Total de Pruebas: 4
-Tiempo Total: 564 ms
-Pruebas
+Total Tests: 4
+Total Time: 564 ms
+
 ### ImmediateStart
+Description: Test the timer with an immediate start.
+Execution Time: 111 ms
 
-Descripción: Prueba el temporizador con un inicio inmediato.
-Tiempo de Ejecución: 111 ms
 ### ManualStartStop
+Description: Test the timer with manual start and stop.
+Execution Time: 105 ms
 
-Descripción: Prueba el temporizador con inicio y parada manual.
-Tiempo de Ejecución: 105 ms
 ### ElapsedWhileRunning
+Description: Test the calculation of elapsed time while the timer is running.
+Execution Time: 104 ms
 
-Descripción: Prueba el cálculo del tiempo transcurrido mientras el temporizador está en funcionamiento.
-Tiempo de Ejecución: 104 ms
 ### ElapsedAfterStop
+Description: Test the calculation of elapsed time after stopping the timer.
+Execution Time: 217 ms
 
-Descripción: Prueba el cálculo del tiempo transcurrido después de detener el temporizador.
-Tiempo de Ejecución: 217 ms
 ## 10. YUVReaderTest
-Total de Pruebas: 3
-Tiempo Total: 74 ms
-Pruebas
+Total Tests: 3
+Total Time: 74 ms
+
+
 ### ReadImage_ValidFrame
+Description: Test reading a valid frame from a YUV image.
+Execution Time: 28 ms
 
-Descripción: Prueba la lectura de un cuadro válido de una imagen YUV.
-Tiempo de Ejecución: 28 ms
 ### ReadImage_FrameOutOfBounds
+Description: Test reading a frame out of bounds.
+Result: An appropriate error message was recorded.
+Execution Time: 11 ms
 
-Descripción: Prueba la lectura de un cuadro fuera de los límites.
-Resultado: Se registró un mensaje de error apropiado.
-Tiempo de Ejecución: 11 ms
 ### ReadImage_FileNotFound
-
-Descripción: Prueba la lectura de una imagen de un archivo inexistente.
-Resultado: Se registró un mensaje de error apropiado.
-Tiempo de Ejecución: 15 ms
+Description: Test reading an image from a nonexistent file.
+Result: An appropriate error message was recorded.
+Execution Time: 15 ms
 
 
 # Nvidia Nsight
